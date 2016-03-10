@@ -8,7 +8,7 @@ Due: 11:59 PM on Wednesday, March 30, 2016
 
 You should complete this assignment as a group assignment with the other members of your group. Each group should have 3 or 4 members, no more, no less. Submit only ONE program per group. Also, make sure that you list the names of all group members who participated in this assignment in order for each to get credit.
 
-#### GOALS:
+### GOALS:
 
 There are four objectives to this assignment:
 
