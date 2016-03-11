@@ -13,22 +13,8 @@
 // =====================================================================
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 
 int main () {
-	
-	
-	/*
-	test code for system to find out if it returns a number, will be using which
-	if system() fucntions probably it will return a 0 resulting in the if statement 
-	not being true
-	-russell
-	*/
-	char* call = " at ! $$$ text.txt";
-	if(system(call) != 0)
-	printf("\n\n\n%i\n\n error", returned);
-
+	printf("Hello World! %c\n");
 	return 0;
 }
