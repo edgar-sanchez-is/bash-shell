@@ -1,4 +1,0 @@
-cat < text.txt
-ls
-ls -l
-grep "cat" text.txt

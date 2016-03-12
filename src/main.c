@@ -13,8 +13,31 @@
 // =====================================================================
 
 #include <stdio.h>
+#include <stdlib.h>
 
-int main () {
-	printf("Hello World! %c\n");
+#define TEST "/Users/Edgar/Documents/GitHub/major-assignment-1/src/test/batch"
+
+int main (int argc, char* argv[]) {
+
+	if (argc == 2) {
+		//char* batchInput = argv[1];
+		char* batchInput = TEST;
+		FILE* batchFile = fopen(batchInput, "r");
+		if (batchFile == NULL)
+		{
+			fprintf(stderr, "Could not open batch file.\n");
+			return EXIT_FAILURE;
+		}
+		//printf("Batch command: %s\n", batchFile);
+
+		fscanf(batchFile, );
+
+		fclose(batchFile);
+	}
+	else if (argc > 2) {
+		fprintf(stderr, "Too many arguments.\n");
+		return EXIT_FAILURE;
+	}
+
 	return 0;
 }
