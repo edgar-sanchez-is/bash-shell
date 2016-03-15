@@ -9,7 +9,7 @@ Alex, Edgar, Luis, and Russell
 
 ##### Design Overview
 
-A simple shell that can be run in interactive or batch mode.
+A shell implemenation that can be run in interactive or batch mode.
 
 ##### Complete Specification
 
@@ -21,7 +21,7 @@ To run the program, execute:
 
     $ ./shell [batchFile]
 
-- **batchFile**: an optional argument (indicated by square brackets as above). If present, the shell will read each line of the batchFile for commands to be executed. If not present, the shell will run in interactive mode by printing a prompt to the user at stdout and reading the command stdin.
+- **batchFile**: an optional argument (indicated by square brackets as above). If present, the shell will read each line of the batchFile for commands to be executed and will exit when it reaches a `quit` command, the end of the file, or if you enter '`Ctrl-D`'. If not present, the shell will run in interactive mode by printing a prompt to the user at stdout and reading the command stdin.
 
 For example, if you run the program as:
 
@@ -38,6 +38,18 @@ then the shell will display an interactive prompt:
     prompt>
 
 This interactive shell will accept commands and display output until you quit the program.
+
+You may execute multiple commands in interactive mode or in batch files by separating them with a "`;`". Such as:
+
+    prompt> ls -l; who; ps
+
+which would output something similar to this:
+
+![prompt sample](http://i.imgur.com/bVraaQE.png)
+
+Commands are run simultaneously, which means that some of the output may be intermixed. This is by design.
+
+To exit the shell, simply provide a `quit` command. This will cause the shell to exit and will stop processing any more commands.
 
 ##### Directory Structure
 
