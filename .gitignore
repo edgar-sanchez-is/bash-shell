@@ -32,6 +32,12 @@
 *.dSYM/
 
 # =========================
+# CMake
+# =========================
+
+CMakeLists.txt
+
+# =========================
 # JetBrains IDEs
 # =========================
 # Created by https://www.gitignore.io
