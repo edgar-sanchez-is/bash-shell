@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 			char batchInput[MAX_LENGTH]; // Stores string within batch file
 
 			if (batchFile == NULL) {
-				fprintf(stderr, "Could not open batch file.\n");
+				fprintf(stderr, "Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
 
@@ -87,7 +87,7 @@ void parseCommand(char *inputString) {
 
 			// Executes parsedInput using bash
 			// If successful, child process terminates
-			execl("/bin/bash", "/bin/bash", "-c", parsedInput, NULL);
+			execl("/bin/bash", "Error", "-c", parsedInput, NULL);
 			_exit(EXIT_FAILURE); // Only executes if execl fails
 		}
 		else if (pid < 0) {
@@ -104,5 +104,4 @@ void parseCommand(char *inputString) {
 	for(int i=0; i < totalChildren; ++i){
 		wait(NULL); // Proceeds if a single child is terminated
 	}
-	printf("ALL CHILDREN ARE DEAD!\n");
 }
