@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
 			fgets(batchInput, MAX_LENGTH, batchFile);
 
 			// Prints first part of batch commands
+			printf("Batch commands: ");
 
 			// Parses/executes batchInput and stores returned bool value in shellStatus
 			shellStatus = runCommand(batchInput, true);
@@ -100,6 +101,10 @@ bool runCommand(char* strInput, bool batchMode) {
 		trimSpaces(command);
 
 		// Prints current commands if batchMode is true
+		else if (batchMode == true) {
+			printf("[ %s ] ", command);
+			fflush(stdout);					// Forces printing to screen
+		}
 
 		if (strcmp(command, "quit") == 0) {
 			printf("Shell terminated!\n");
@@ -136,7 +141,10 @@ bool runCommand(char* strInput, bool batchMode) {
 	}
 
 	// Prints newline after current batch commands and sets exitStatus to false if batchMode is true
+	if (batchMode == true) {
+		printf("\n");
 		exitStatus = false;
+	}
 
 	// Waits for each child to terminate
 	for(int i=0; i < totalChildren; ++i){
