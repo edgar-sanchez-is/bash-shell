@@ -89,6 +89,8 @@ void parseCommand(char *inputString) {
 			// If successful, child process terminates
 			execl("/bin/bash", "Error", "-c", parsedInput, NULL);
 			_exit(EXIT_FAILURE); // Only executes if execl fails
+		// Trims leading and trailing spaces around current command
+		trimSpaces(command);
 		}
 		else if (pid < 0) {
 			fprintf(stderr, "Fork failed.\n");
@@ -103,5 +105,22 @@ void parseCommand(char *inputString) {
 	// Waits for each child to terminate
 	for(int i=0; i < totalChildren; ++i){
 		wait(NULL); // Proceeds if a single child is terminated
+// Trims leading and trailing spaces from a given string
+void trimSpaces(char* parsedInput)
+{
+	// Trims trailing spaces
+	char *s = parsedInput + strlen(parsedInput);
+	while (--s >= parsedInput) {
+		if (!isspace(*s)) {
+			break;
+		}
+		*s = 0;
 	}
+
+	// Trims leading spaces
+	size_t n = 0;
+	while (parsedInput[n] != '\0' && isspace((unsigned char)parsedInput[n])) {
+		n++;
+	}
+	memmove(parsedInput, parsedInput + n, strlen(parsedInput) - n + 1);
 }
