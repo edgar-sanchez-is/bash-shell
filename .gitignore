@@ -35,7 +35,7 @@
 # CMake
 # =========================
 
-CMakeLists.txt
+/CMakeLists.txt
 
 # =========================
 # JetBrains IDEs
@@ -127,3 +127,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+CMakeLists.txt

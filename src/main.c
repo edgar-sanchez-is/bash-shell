@@ -18,44 +18,61 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <ctype.h>
+#include <stdbool.h>
 
-// Linux Test Dir	"/Users/Edgar/Documents/GitHub/major-assignment-1/src/test/batch"
-// Windows Test Dir	"/cygdrive/c/Edgar/Documents/GitHub/major-assignment-1/src/test/batch"
 #define MAX_LENGTH 512
 
 // Function prototypes
-void parseCommand(char *);
+bool runCommand(char*, bool);
+void trimSpaces(char*);
+
 
 int main(int argc, char* argv[]) {
-	do {
-		// Processes batch file
-		if (argc == 2) {
-			char* batchDirectory = argv[1]; // Stores shell argument (file directory)
-			FILE* batchFile = fopen(batchDirectory, "r"); // Opens file for reading and stores in batchFile
-			char batchInput[MAX_LENGTH]; // Stores string within batch file
+	bool shellStatus;	// Controls the Shell loop
 
+	// ===============
+	// Main Shell Loop
+	// ===============
+	do {
+		if (argc == 2) {
+			// ====================
+			// Processes batch file
+			// ====================
+			char* batchDir = argv[1]; 				// Stores shell argument (file directory)
+			FILE* batchFile = fopen(batchDir, "r");	// Opens batchDir for reading and stores stream in batchFile
+			char batchInput[MAX_LENGTH];			// Stores string within batch file
+
+			// Exits with failure if batchFile could not be opened
 			if (batchFile == NULL) {
 				fprintf(stderr, "Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
 
-			// Reads text within batchFile and stores it in batchInput
-			fgets (batchInput, MAX_LENGTH, batchFile);
+			// Reads batchFile stream and stores it in batchInput
+			fgets(batchInput, MAX_LENGTH, batchFile);
 
-			// Parses and executes batchInput
-			parseCommand(batchInput);
+			// Prints first part of batch commands
+			printf("Batch commands: ");
+
+			// Parses/executes batchInput and stores returned bool value in shellStatus
+			shellStatus = runCommand(batchInput, true);
 
 			// Closes batchFile
 			fclose(batchFile);
-			return EXIT_SUCCESS;
 		}
 		else if (argc > 2) {
+			// ====================
+			// Invalid program call
+			// ====================
 			fprintf(stderr, "Too many arguments.\n");
 			return EXIT_FAILURE;
 		}
-		// Processes interactive input
 		else {
-			char userInput[MAX_LENGTH]; // Stores string input by user
+			// ====================
+			// Processes user input
+			// ====================
+			char userInput[MAX_LENGTH]; 			// Stores string input by user
 
 			// Displays prompt within interactive shell
 			printf("prompt> ");
@@ -64,44 +81,99 @@ int main(int argc, char* argv[]) {
 			fgets(userInput, MAX_LENGTH, stdin);
 
 			// Parses and executes userInput
-			parseCommand(userInput);
+			shellStatus = runCommand(userInput, false);
 		}
-	} while (1);
+	} while(shellStatus);
+
+	return EXIT_SUCCESS;
 }
 
-// Parses the string of commands provided by the user or within batch file
-void parseCommand(char *inputString) {
-	int totalChildren = 0; // Counter to keep track of total child processes
-	char* parsedInput = strtok(inputString, ";"); // Stores each command in parsedInput, separated by ";"
-	pid_t pid; // Process ID initialization
+// Parses/executes inputString as userInput if batchMode is false or as batchInput if batchMode is true
+bool runCommand(char* strInput, bool batchMode) {
+	int totalChildren = 0;					// Counter to keep track of total child processes
+	char* command = strtok(strInput, ";");	// Stores each command separated by ";"
+	pid_t pid; 								// Initializes Process ID
+	bool exitStatus = true;					// Controls runCommand()'s return value
 
-	// Loops through each single command within the string of commands, parsedInput returns NULL if empty
-	while (parsedInput) {
-		// Creates a child process by calling fork().
-		// The child process is a mirror of the parent process.
-		// In the child process, pid == 0 and it executes the if statement.
-		// In the parent process, pid is > 0 and it executes the else statement.
-		// If pid is < 0, then there was an error creating the fork.
-		if ((pid = fork()) == 0) {
-			// printf("COMMAND: %s", parsedInput); // TODO: Troubleshoot printing each command executed
+	// Processes each command until strtok() returns NULL
+	while (command) {
+		// Trims leading and trailing spaces around current command
+		trimSpaces(command);
 
-			// Executes parsedInput using bash
-			// If successful, child process terminates
-			execl("/bin/bash", "Error", "-c", parsedInput, NULL);
-			_exit(EXIT_FAILURE); // Only executes if execl fails
+		// Prints current commands if batchMode is true
+		if (strcmp(command, "") == 0) {
+			command = strtok(NULL, ";");
+			continue;
+		}
+		else if (batchMode == true) {
+			printf("[ %s ] ", command);
+			fflush(stdout);					// Forces printing to screen
+		}
+
+		if (strcmp(command, "quit") == 0) {
+			printf("Shell terminated!\n");
+			exitStatus = false;
+			break;
+		}
+		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
+			// ================
+			// Child Process
+			// ================
+
+			// Executes command and terminates child if successful or command not found
+			execl("/bin/bash", "Error", "-c", command, NULL);
+			fprintf(stderr, "Error: %s: Failed to execute\n", command);
+			_exit(EXIT_FAILURE); 			// Executes and terminates child if execl() fails
 		}
 		else if (pid < 0) {
-			fprintf(stderr, "Fork failed.\n");
+			// ================
+			// Forking failed
+			// ================
+
+			fprintf(stderr, "Error: Failed to fork child process\n");
+			_exit(EXIT_FAILURE); 			// Terminates child
 		}
-		else {
-			totalChildren++;
+		else {								// Can only be run by parent because pid > 0
+			// ================
+			// Parent Process
+			// ================
+
 			// Continues searching for commands starting from last ";"
-			parsedInput = strtok(NULL, ";");
+			command = strtok(NULL, ";");
+			totalChildren++;				// Increases total number of child processes
 		}
+	}
+
+	// Prints newline after current batch commands and sets exitStatus to false if batchMode is true
+	if (batchMode == true) {
+		printf("\n");
+		exitStatus = false;
 	}
 
 	// Waits for each child to terminate
 	for(int i=0; i < totalChildren; ++i){
-		wait(NULL); // Proceeds if a single child is terminated
+		wait(NULL); 						// Proceeds if a single child is terminated
 	}
+
+	return exitStatus;						// Returns false if shell should exit successfully
+}
+
+// Trims leading and trailing spaces from a given string
+void trimSpaces(char* parsedInput)
+{
+	// Trims trailing spaces
+	char *s = parsedInput + strlen(parsedInput);
+	while (--s >= parsedInput) {
+		if (!isspace(*s)) {
+			break;
+		}
+		*s = 0;
+	}
+
+	// Trims leading spaces
+	size_t n = 0;
+	while (parsedInput[n] != '\0' && isspace((unsigned char)parsedInput[n])) {
+		n++;
+	}
+	memmove(parsedInput, parsedInput + n, strlen(parsedInput) - n + 1);
 }
