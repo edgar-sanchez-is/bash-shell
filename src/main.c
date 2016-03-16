@@ -101,6 +101,10 @@ bool runCommand(char* strInput, bool batchMode) {
 		trimSpaces(command);
 
 		// Prints current commands if batchMode is true
+		if (strcmp(command, "") == 0) {
+			command = strtok(NULL, ";");
+			continue;
+		}
 		else if (batchMode == true) {
 			printf("[ %s ] ", command);
 			fflush(stdout);					// Forces printing to screen
