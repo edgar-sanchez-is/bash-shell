@@ -19,43 +19,56 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-// Linux Test Dir	"/Users/Edgar/Documents/GitHub/major-assignment-1/src/test/batch"
-// Windows Test Dir	"/cygdrive/c/Edgar/Documents/GitHub/major-assignment-1/src/test/batch"
 #define MAX_LENGTH 512
 
 // Function prototypes
 void parseCommand(char *);
 
+
 int main(int argc, char* argv[]) {
+
+	// ===============
+	// Main Shell Loop
+	// ===============
 	do {
-		// Processes batch file
 		if (argc == 2) {
 			char* batchDirectory = argv[1]; // Stores shell argument (file directory)
 			FILE* batchFile = fopen(batchDirectory, "r"); // Opens file for reading and stores in batchFile
 			char batchInput[MAX_LENGTH]; // Stores string within batch file
 
+			// ====================
+			// Processes batch file
+			// ====================
+			// Exits with failure if batchFile could not be opened
 			if (batchFile == NULL) {
 				fprintf(stderr, "Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
 
-			// Reads text within batchFile and stores it in batchInput
 			fgets (batchInput, MAX_LENGTH, batchFile);
+			// Reads batchFile stream and stores it in batchInput
 
-			// Parses and executes batchInput
 			parseCommand(batchInput);
+			// Prints first part of batch commands
+
+			// Parses/executes batchInput and stores returned bool value in shellStatus
 
 			// Closes batchFile
 			fclose(batchFile);
 			return EXIT_SUCCESS;
 		}
 		else if (argc > 2) {
+			// ====================
+			// Invalid program call
+			// ====================
 			fprintf(stderr, "Too many arguments.\n");
 			return EXIT_FAILURE;
 		}
-		// Processes interactive input
 		else {
 			char userInput[MAX_LENGTH]; // Stores string input by user
+			// ====================
+			// Processes user input
+			// ====================
 
 			// Displays prompt within interactive shell
 			printf("prompt> ");
@@ -69,39 +82,47 @@ int main(int argc, char* argv[]) {
 	} while (1);
 }
 
-// Parses the string of commands provided by the user or within batch file
 void parseCommand(char *inputString) {
 	int totalChildren = 0; // Counter to keep track of total child processes
 	char* parsedInput = strtok(inputString, ";"); // Stores each command in parsedInput, separated by ";"
 	pid_t pid; // Process ID initialization
 
-	// Loops through each single command within the string of commands, parsedInput returns NULL if empty
 	while (parsedInput) {
-		// Creates a child process by calling fork().
-		// The child process is a mirror of the parent process.
-		// In the child process, pid == 0 and it executes the if statement.
-		// In the parent process, pid is > 0 and it executes the else statement.
-		// If pid is < 0, then there was an error creating the fork.
 		if ((pid = fork()) == 0) {
-			// printf("COMMAND: %s", parsedInput); // TODO: Troubleshoot printing each command executed
 
-			// Executes parsedInput using bash
-			// If successful, child process terminates
 			execl("/bin/bash", "Error", "-c", parsedInput, NULL);
 			_exit(EXIT_FAILURE); // Only executes if execl fails
+// Parses/executes inputString as userInput if batchMode is false or as batchInput if batchMode is true
+
+	// Processes each command until strtok() returns NULL
 		// Trims leading and trailing spaces around current command
 		trimSpaces(command);
+		// Prints current commands if batchMode is true
+			// ================
+			// Child Process
+			// ================
+
+			// Executes command and terminates child if successful or command not found
 		}
 		else if (pid < 0) {
 			fprintf(stderr, "Fork failed.\n");
+			// ================
+			// Forking failed
+			// ================
+
 		}
 		else {
 			totalChildren++;
+			// ================
+			// Parent Process
+			// ================
+
 			// Continues searching for commands starting from last ";"
 			parsedInput = strtok(NULL, ";");
 		}
 	}
 
+	// Prints newline after current batch commands and sets exitStatus to false if batchMode is true
 	// Waits for each child to terminate
 	for(int i=0; i < totalChildren; ++i){
 		wait(NULL); // Proceeds if a single child is terminated
