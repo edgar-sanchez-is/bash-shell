@@ -59,6 +59,25 @@ int main(int argc, char* argv[]) {
 				fprintf(stderr, "Error: Batch file is empty\n");
 				return EXIT_FAILURE;
 			}
+			else {
+				//checks how many characters are in the batch file and exits if it excedes the limit or continues with a warning
+				// of only processing the first 512
+				//printf("\n\n inside the else statement \n\n");// testing code
+				int count = 0;
+				int c;
+				//gets each char in file and adds 1 to count each loop
+				while((c=fgetc(batchFile))){	
+					count++;
+					//printf("%i", count); //testing code
+					if(count > 512){
+						fprintf(stderr, "Error: %s has to many characters in the file, will only process first 512\n", batchDir);
+						break;
+						//return EXIT_FAILURE; // if prof wants it to exit, unsure as of right now
+					}
+				
+				}
+				
+			}
 
 			// Sets file pointer back to beginning of file
 			fseek(batchFile, 0, SEEK_SET);
