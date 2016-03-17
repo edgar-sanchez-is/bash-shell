@@ -43,11 +43,22 @@ int main(int argc, char* argv[]) {
 			FILE* batchFile = fopen(batchDir, "r");	// Opens batchDir for reading and stores stream in batchFile
 			char batchInput[MAX_LENGTH];			// Stores string within batch file
 
+			// Seeks to end of batchFile and stores file size
+			fseek(batchFile, 0, SEEK_END);
+			long fileSize = ftell(batchFile);
+
 			// Exits with failure if batchFile could not be opened
 			if (batchFile == NULL) {
-				fprintf(stderr, "Batch file does not exist or cannot be opened.\n");
+				fprintf(stderr, "Error: Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
+			else if (fileSize == 0) {
+				fprintf(stderr, "Error: Batch file is empty\n");
+				return EXIT_FAILURE;
+			}
+
+			// Sets file pointer back to beginning of file
+			fseek(batchFile, 0, SEEK_SET);
 
 			// Reads batchFile stream and stores it in batchInput
 			fgets(batchInput, MAX_LENGTH, batchFile);
@@ -65,7 +76,7 @@ int main(int argc, char* argv[]) {
 			// ====================
 			// Invalid program call
 			// ====================
-			fprintf(stderr, "Too many arguments.\n");
+			fprintf(stderr, "Error: Too many arguments.\n");
 			return EXIT_FAILURE;
 		}
 		else {
@@ -77,8 +88,12 @@ int main(int argc, char* argv[]) {
 			// Displays prompt within interactive shell
 			printf("prompt> ");
 
-			// Reads string input by user and stores it in userInput
-			fgets(userInput, MAX_LENGTH, stdin);
+			// Reads user input and handles Ctrl-D
+			if (fgets(userInput, MAX_LENGTH, stdin) == NULL) {
+				putchar('\n');
+				fflush(stdout);
+				return EXIT_SUCCESS;
+			}
 
 			// Parses and executes userInput
 			shellStatus = runCommand(userInput, false);
@@ -111,7 +126,6 @@ bool runCommand(char* strInput, bool batchMode) {
 		}
 
 		if (strcmp(command, "quit") == 0) {
-			printf("Shell terminated!\n");
 			exitStatus = false;
 			break;
 		}
