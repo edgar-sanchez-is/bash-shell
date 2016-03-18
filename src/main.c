@@ -25,11 +25,14 @@
 
 // Global variables
 char* PATH = "/bin/bash";
+	char historyList[MAX_LENGTH][MAX_LENGTH] = {0}; //holds the max number of commands the user can enter
+	int historyIterator = 0;						//holds current number of commands the user has enetered
+
 
 // Function prototypes
 bool runCommand(char*, bool);
 void trimSpaces(char*);
-
+void history(char*);
 
 int main(int argc, char* argv[]) {
 	bool shellStatus;	// Controls the Shell loop
@@ -127,15 +130,19 @@ int main(int argc, char* argv[]) {
 
 // Parses/executes inputString as userInput if batchMode is false or as batchInput if batchMode is true
 bool runCommand(char* strInput, bool batchMode) {
-	int totalChildren = 0;					// Counter to keep track of total child processes
-	char* command = strtok(strInput, ";");	// Stores each command separated by ";"
-	pid_t pid; 								// Initializes Process ID
-	bool exitStatus = true;					// Controls runCommand()'s return value
+	int totalChildren = 0;							// Counter to keep track of total child processes
+	char* command = strtok(strInput, ";");			// Stores each command separated by ";"
+	pid_t pid; 										// Initializes Process ID
+	bool exitStatus = true;							// Controls runCommand()'s return value
+
 
 	// Processes each command until strtok() returns NULL
 	while (command) {
 		// Trims leading and trailing spaces around current command
 		trimSpaces(command);
+		
+		//add command to history
+		history(command);
 
 		if (strcmp(command, "") == 0) {
 			// Strips empty commands
@@ -180,9 +187,9 @@ bool runCommand(char* strInput, bool batchMode) {
 			// ================
 			// Parent Process
 			// ================
-
+			
 			// Continues searching for commands starting from last ";"
-			command = strtok(NULL, ";");
+			command = strtok(NULL, ";");		
 			totalChildren++;				// Increases total number of child processes
 		}
 	}
@@ -219,4 +226,22 @@ void trimSpaces(char* parsedInput)
 		n++;
 	}
 	memmove(parsedInput, parsedInput + n, strlen(parsedInput) - n + 1);
+}
+//adds commands to history or prints it out
+void history(char* command){
+	
+	//copies command into the array of strings
+	strcpy(historyList[historyIterator], command);
+	//add one to itterator
+	historyIterator++;
+	
+	//user has typed in history so we print the history list
+	if(strcmp(command, "history")== 0)
+	{
+		//printf("history has been called, %i\n", historyIterator);
+		for(int i = 0; i <= historyIterator-1; i++){
+			printf("Command[%i] = %s\n", i, historyList[i]);
+		}	
+	}
+	
 }

@@ -17,6 +17,8 @@ To compile the program, execute:
 
     $ make
 
+	C language used is C99
+
 To run the program, execute:
 
     $ ./shell [batchFile]
@@ -64,3 +66,5 @@ README.md         |   Basic documentation and information.
 ##### Known Bugs or Problems
 
 [View current issues.](https://github.com/unt-sysprog-team/major-assignment-1/issues)
+
+#### Features not  implemenated 
