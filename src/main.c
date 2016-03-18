@@ -123,7 +123,7 @@ bool runCommand(char* strInput, bool batchMode) {
 			command = strtok(NULL, ";");
 			continue;
 		}
-		else if (strncmp(command, "PATH=", 5) == 0) {
+		else if (strncmp(command, "PATH=", 5) == 0 && batchMode == false) {
 			// Allows change of PATH variable
 			PATH = (command + 5);
 			printf("NEW PATH: %s\n", PATH);
