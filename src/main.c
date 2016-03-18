@@ -161,8 +161,12 @@ bool runCommand(char* strInput, bool batchMode) {
 			fflush(stdout);					// Forces printing to screen
 		}
 
-		if (strcmp(command, "quit") == 0) {
+		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			exitStatus = false;
+			break;
+		}
+		else if(strstr(command, "cd") != NULL){ // Searches for 'cd' on the commands
+			chdir(command+3);
 			break;
 		}
 		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
@@ -227,6 +231,7 @@ void trimSpaces(char* parsedInput)
 	}
 	memmove(parsedInput, parsedInput + n, strlen(parsedInput) - n + 1);
 }
+<<<<<<< HEAD
 //adds commands to history or prints it out
 void history(char* command){
 	
@@ -245,3 +250,5 @@ void history(char* command){
 	}
 	
 }
+=======
+>>>>>>> origin/master
