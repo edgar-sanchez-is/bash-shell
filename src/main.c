@@ -23,6 +23,9 @@
 
 #define MAX_LENGTH 512
 
+// Global variables
+char* PATH = "/bin/bash";
+
 // Function prototypes
 bool runCommand(char*, bool);
 void trimSpaces(char*);
@@ -115,12 +118,19 @@ bool runCommand(char* strInput, bool batchMode) {
 		// Trims leading and trailing spaces around current command
 		trimSpaces(command);
 
-		// Prints current commands if batchMode is true
 		if (strcmp(command, "") == 0) {
+			// Strips empty commands
 			command = strtok(NULL, ";");
 			continue;
 		}
+		else if (strncmp(command, "PATH=", 5) == 0) {
+			// Allows change of PATH variable
+			PATH = (command + 5);
+			printf("NEW PATH: %s\n", PATH);
+			break;
+		}
 		else if (batchMode == true) {
+			// Prints current commands if batchMode is true
 			printf("[ %s ] ", command);
 			fflush(stdout);					// Forces printing to screen
 		}
@@ -135,7 +145,7 @@ bool runCommand(char* strInput, bool batchMode) {
 			// ================
 
 			// Executes command and terminates child if successful or command not found
-			execl("/bin/bash", "Error", "-c", command, NULL);
+			execl(PATH, "Shell", "-c", command, NULL);
 			fprintf(stderr, "Error: %s: Failed to execute\n", command);
 			_exit(EXIT_FAILURE); 			// Executes and terminates child if execl() fails
 		}
