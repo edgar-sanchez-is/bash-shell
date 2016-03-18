@@ -158,6 +158,10 @@ bool runCommand(char* strInput, bool batchMode) {
 			exitStatus = false;
 			break;
 		}
+		else if(strstr(command, "cd") != NULL){ // Searches for 'cd' on the commands
+			chdir(command+3);
+			break;
+		}
 		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
 			// ================
 			// Child Process
