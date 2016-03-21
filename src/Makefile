@@ -1,7 +1,7 @@
 SOURCES = main.c
 
 start:	main.c
-	gcc -std=c99 -Wall -o shell $(SOURCES) -lpthread
+	gcc -std=c99 -Wall -o shell $(SOURCES)
 
 run: shell
 	./shell

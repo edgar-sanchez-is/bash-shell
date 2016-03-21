@@ -32,6 +32,12 @@
 *.dSYM/
 
 # =========================
+# CMake
+# =========================
+
+/CMakeLists.txt
+
+# =========================
 # JetBrains IDEs
 # =========================
 # Created by https://www.gitignore.io
@@ -121,3 +127,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+CMakeLists.txt
