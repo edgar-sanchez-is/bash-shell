@@ -29,12 +29,23 @@ char historyList[MAX_LENGTH][MAX_LENGTH] = {0}; // Max number of commands the us
 int historyIterator = 0;			// Number of commands the user has enetered
 
 
+
 // Function prototypes
 bool runCommand(char*, bool);
 void trimSpaces(char*);
 void history(char*);
+void customPrompt();
+void colorSelectionPrompt();
+
+
+
 
 int main(int argc, char* argv[]) {
+	
+	
+	customPrompt();
+	
+	
 	bool shellStatus;			// Controls the Shell loop
 
 	// ===============
@@ -78,7 +89,7 @@ int main(int argc, char* argv[]) {
 			printf("Batch commands: ");
 
 			// Parses/executes batchInput and stores returned bool value in shellStatus
-			shellStatus = runCommand(batchInput, true);
+			shellStatus = runCommand(batchInput, true);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 			// Closes batchFile
 			fclose(batchFile);
@@ -234,3 +245,73 @@ void history(char* command) {
 	}
 	
 }
+
+void colorSelectionPrompt(char foregroundOrHighlight[],int *menuValue){//pass the string "foreGround" or "Background"
+
+	
+
+	printf("Enter the corresponding number that you want the %s to be for the font\n", foregroundOrHighlight);
+	
+	printf("\n1-Black\n2-Red\n3-Green\n4-Yellow\n5-Blue\n6-Magenta\n7-Cyan\n8-White\n");
+	
+	scanf("%d", menuValue);//reads in the menu value
+	
+	
+}
+
+void customPrompt(){
+	
+	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};//Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
+	int highlightAsciiValue[8] = {40,41,42,43,44,45,46,47};//Same colors as above
+	int indexForeground;//the default color for foreground is white
+	int indexHighlight;//default background or highlight of black
+	 
+	int menuValue;
+	bool loopAgain = true;
+	
+	while(loopAgain){
+		char foreOrBack[10] = "foreground";//value either foreGround or background
+		indexForeground = 7;
+		indexHighlight = 0;
+		
+		colorSelectionPrompt(foreOrBack,&menuValue);//calls the prompt or menu selection for selecting colors
+	
+		indexForeground = menuValue - 1;//foregroundAsciiValue[indexForeground] selects the requested color
+	
+		memset(foreOrBack,0,strlen(foreOrBack));//resets the string to null
+	
+		strcpy(foreOrBack,"highlight");//fills the c string with highlight
+	
+		colorSelectionPrompt(foreOrBack, &menuValue);//calls the prompt or menu selection for selecting colors
+	
+		indexHighlight = menuValue - 1;//highlightAsciiValue[indexHighlight] selects the requested color
+		
+		printf("\e[%dm", foregroundAsciiValue[indexForeground]);//acii escape sequence for foreground
+		printf("\e[%dm", highlightAsciiValue[indexHighlight]);//ascii escape sequence for background
+	
+		printf("Example Text\n");//example color pallete the user selected
+	
+		printf("\e[%dm", 39);//default foreground color
+		printf("\e[%dm", 49);//default background color
+		
+		while(1){
+			printf("\nWould you like to keep these settings\n1-Yes\n2-No\n");//prompts user
+	
+			scanf("%d",&menuValue);//reads menu selection
+	
+			if(menuValue == 1){//infinitely loops if the user types an incorrect menu value
+				printf("\e[%dm", foregroundAsciiValue[indexForeground]);//sets the color the user selected for foreground
+				printf("\e[%dm", highlightAsciiValue[indexHighlight]);//sets the color the user selected for background or highlight
+				loopAgain = false;//the outer for loop no longer needs to run
+				break;	//breaks from infinite loop
+			}
+			else if(menuValue == 2){//if the user cant see or hates the colors selected this is the opportunity to change it
+				loopAgain = true;//outer while loop runs again
+				break;//breaks from infinite loop
+			}
+			
+			//if the wrong value is typed inner while loop infinitely loops until the user selects an appropriate selection
+		}	
+    }//end of while(loopAgain){}
+  
+}//end of void customPrompt(){}
