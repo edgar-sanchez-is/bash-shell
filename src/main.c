@@ -223,12 +223,11 @@ void history(char* command) {
 	
 	// Copies command into the array of strings
 	strcpy(historyList[historyIterator], command);
-	//add one to itterator
-	historyIterator++;
-	
+	historyIterator++;						// Increases total number of commands in history
+
 	// User has typed in history so we print the history list
-	if(strcmp(command, "history")== 0) {
-		for(int i = 0; i <= historyIterator-1; i++) {
+	if(strcmp(command, "history") == 0) {
+		for(int i = 0; i < historyIterator-1; i++) {
 			printf("Command[%i] = %s\n", i, historyList[i]);
 		}	
 	}
