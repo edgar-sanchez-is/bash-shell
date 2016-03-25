@@ -44,9 +44,6 @@ void defaultColor();
 int main(int argc, char* argv[]) {
 	
 	
-	customPrompt();
-	
-	
 	bool shellStatus;			// Controls the Shell loop
 
 	// ===============
@@ -112,7 +109,15 @@ int main(int argc, char* argv[]) {
 			char userInput[MAX_LENGTH]; 			// Stores string input by user
 
 			// Displays prompt within interactive shell
-			printf("prompt> ");
+			static int counter = 1;
+			
+			if(counter++ > 1)
+				printf("prompt> ");
+			else{
+				printf("\e[91mTo customize prompt enter the 'customize' command\n");
+				defaultColor();
+				printf("prompt> ");
+			}
 
 			// Reads user input and handles Ctrl-D
 			if (fgets(userInput, MAX_LENGTH, stdin) == NULL) {
@@ -172,6 +177,10 @@ bool runCommand(char* strInput, bool batchMode) {
 		else if(strstr(command, "cd") != NULL) { 
 			// Searches for 'cd' on the commands
 			chdir(command+3);
+			break;
+		}
+		else if(strstr(command, "customize") != NULL){
+			customPrompt(); // Enters the prompt customization interface
 			break;
 		}
 		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
