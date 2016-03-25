@@ -25,7 +25,7 @@
 
 // Global variables
 char* PATH = "/bin/bash";			// Default PATH directory
-char historyList[MAX_LENGTH][MAX_LENGTH] = {0}; // Max number of commands the user can enter
+char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; // Max number of commands the user can enter
 int historyIterator = 0;			// Number of commands the user has enetered
 
 
@@ -303,6 +303,19 @@ void defaultColor(){
 }
 
 void customPrompt(){
+	
+	printf("Would you like to customize the prompt's colors (0) or change a commands name (1)?\n customize>");
+	char userResponse; 			// Stores user response
+	scanf("%c", &userResponse);
+	if(userResponse == '0'){// If response = 0 stay in color customization
+		printf("Entering prompt customization interface...\n");
+		sleep(2);
+	}
+	else if(userResponse == '1'){ // If response = 1 go to changeCommand()
+		//changeCommand();
+	}
+	else
+		printf("Invalid command, returning to prompt...\n");// If invalid command return to prompt
 	
 	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};//Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
 	int highlightAsciiValue[8] = {40,41,42,43,44,45,46,47};//Same colors as above
