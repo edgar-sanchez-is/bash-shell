@@ -35,7 +35,7 @@ void trimSpaces(char*);
 void history(char*);
 
 int main(int argc, char* argv[]) {
-	bool shellStatus;			// Controls the Shell loop
+	bool shellStatus = true;								// Controls the Shell loop
 
 	// ===============
 	// Main Shell Loop
@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
 				return EXIT_FAILURE;
 			}
 			else if (fileSize == 0) {
-				fprintf(stderr, "Error: Batch file is empty\n");
 				// Exits with failure if batchFile is empty
+				fprintf(stderr, "Error: Batch file is empty.\n");
 				return EXIT_FAILURE;
 			}
 			else if (fileSize > 516) {
@@ -95,16 +95,22 @@ int main(int argc, char* argv[]) {
 			// ====================
 			// Processes user input
 			// ====================
-			char userInput[MAX_LENGTH]; 			// Stores string input by user
+			char userInput[MAX_LENGTH + 2]; 			// Stores string input by user
 
 			// Displays prompt within interactive shell
 			printf("prompt> ");
 
 			// Reads user input and handles Ctrl-D
-			if (fgets(userInput, MAX_LENGTH, stdin) == NULL) {
+			if (fgets(userInput, (MAX_LENGTH + 3), stdin) == NULL) {
 				putchar('\n');
 				fflush(stdout);
 				return EXIT_SUCCESS;
+			}
+			else if (strlen(userInput) > 512 ) {
+				fprintf(stderr, "Error: %u: command must be less than 512 characters long\n", (unsigned)strlen(userInput));
+				int ch;
+				while ((ch = getc(stdin)) != '\n' || ch != EOF);
+				continue;
 			}
 
 			// Parses and executes userInput
