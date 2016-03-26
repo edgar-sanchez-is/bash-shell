@@ -148,7 +148,11 @@ bool runCommand(char* strInput, bool batchMode) {
 			printf("NEW PATH: %s\n", PATH);
 			break;
 		}
+		else if (strncmp(command, "cd ", 3) == 0 && batchMode == false) {
 			// Allows change of current directory
+			chdir(command + 3);
+			break;
+		}
 		else if (batchMode == true) {
 			// Prints current commands if batchMode is true
 			printf("[ %s ] ", command);
@@ -158,10 +162,6 @@ bool runCommand(char* strInput, bool batchMode) {
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			// Exits parent shell
 			exitStatus = false;
-			break;
-		}
-		else if(strstr(command, "cd") != NULL) { 
-			chdir(command+3);
 			break;
 		}
 		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
