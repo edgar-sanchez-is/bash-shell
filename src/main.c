@@ -25,14 +25,21 @@
 
 // Global variables
 char* PATH = "/bin/bash";			// Default PATH directory
-char historyList[MAX_LENGTH][MAX_LENGTH] = {0}; // Max number of commands the user can enter
+char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; // Max number of commands the user can enter
 int historyIterator = 0;			// Number of commands the user has enetered
+
 
 
 // Function prototypes
 bool runCommand(char*, bool);
 void trimSpaces(char*);
 void history(char*);
+void customPrompt();
+void colorSelectionPrompt();
+void defaultColor();
+
+
+
 
 int main(int argc, char* argv[]) {
 	bool shellStatus = true;								// Controls the Shell loop
@@ -80,7 +87,10 @@ int main(int argc, char* argv[]) {
 
 			// Parses/executes batchInput and stores returned bool value in shellStatus
 			shellStatus = runCommand(batchInput, true);
-
+			
+			
+			
+			
 			// Closes batchFile
 			fclose(batchFile);
 		}
@@ -98,7 +108,15 @@ int main(int argc, char* argv[]) {
 			char userInput[MAX_LENGTH + 2]; 			// Stores string input by user
 
 			// Displays prompt within interactive shell
-			printf("prompt> ");
+			static int counter = 1;
+			
+			if(counter++ > 1)
+				printf("prompt> ");
+			else{
+				printf("\e[91mTo customize prompt enter the 'customize' command\n");
+				defaultColor();
+				printf("prompt> ");
+			}
 
 			// Reads user input and handles Ctrl-D
 			if (fgets(userInput, (MAX_LENGTH + 3), stdin) == NULL) {
@@ -117,13 +135,15 @@ int main(int argc, char* argv[]) {
 			shellStatus = runCommand(userInput, false);
 		}
 	} while(shellStatus);
+	
+	defaultColor();//sets to default color when quit or exit is called in bash file
 
 	return EXIT_SUCCESS;
 }
 
 // Parses/executes inputString as userInput if batchMode is false or as batchInput if batchMode is true
 bool runCommand(char* strInput, bool batchMode) {
-	int totalChildren = 0;							// Counter to keep track of total child processes
+	int totalChildren = 0;							// Counter tlo keep track of total child processes
 	char* command = strtok(strInput, ";");			// Stores each command separated by ";"
 	pid_t pid; 										// Initializes Process ID
 	bool exitStatus = true;							// Controls runCommand()'s return value
@@ -162,6 +182,10 @@ bool runCommand(char* strInput, bool batchMode) {
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			// Exits parent shell
 			exitStatus = false;
+			break;
+		}
+		else if(strstr(command, "customize") != NULL){
+			customPrompt(); // Enters the prompt customization interface
 			break;
 		}
 		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
@@ -241,3 +265,120 @@ void history(char* command) {
 	}
 	
 }
+
+void colorSelectionPrompt(char foregroundOrHighlight[],int *menuValue){//pass the string "foreGround" or "Background"
+	
+	char catchNewLineFromBuffer;//catches new line from the scanf buffer
+	
+	
+	while(1){
+		
+		*menuValue = 0;
+		
+		printf("Enter the corresponding number that you want the %s to be for the font.\n", foregroundOrHighlight);
+	
+		printf("1-Black\n2-Red\n3-Green\n4-Yellow\n5-Blue\n6-Magenta\n7-Cyan\n8-White\n");
+	
+		
+		
+		
+		scanf("%i", menuValue);//catches the first character as an integer
+		scanf("%c", &catchNewLineFromBuffer);//catches the \n characters so it no longer exists in the buffer
+			
+			
+			
+		if(*menuValue > 0 && *menuValue < 9){//if the value is correct break from the infinite loop
+			
+			break;
+		}
+		else{
+			
+			printf("You did not type the right value! Try again.\n");//no appropriate value selected keeps on looping until the user types the correct value
+		}
+			
+		
+	}
+	
+}
+
+void defaultColor(){
+	printf("\e[%dm", 39);//default foreground color
+	printf("\e[%dm", 49);//default background color
+}
+
+void customPrompt(){
+	
+	printf("Would you like to customize the prompt's colors (0) or change a commands name (1)?\n customize>");
+	char userResponse; 			// Stores user response
+	scanf("%c", &userResponse);
+	if(userResponse == '0'){// If response = 0 stay in color customization
+		printf("Entering prompt customization interface...\n");
+		sleep(2);
+	}
+	else if(userResponse == '1'){ // If response = 1 go to changeCommand()
+		//changeCommand();
+	}
+	else
+		printf("Invalid command, returning to prompt...\n");// If invalid command return to prompt
+	
+	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};//Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
+	int highlightAsciiValue[8] = {40,41,42,43,44,45,46,47};//Same colors as above
+	int indexForeground;//the default color for foreground is white
+	int indexHighlight;//default background or highlight of black
+	char catchNewLineFromBuffer;//catches new line from the scanf buffer
+	 
+	int menuValue;
+	bool loopAgain = true;
+	
+	while(loopAgain){
+		char foreOrBack[10] = "foreground";//value either foreGround or background
+		indexForeground = 7;
+		indexHighlight = 0;
+		
+		colorSelectionPrompt(foreOrBack,&menuValue);//calls the prompt or menu selection for selecting colors
+	
+		indexForeground = menuValue - 1;//foregroundAsciiValue[indexForeground] selects the requested color
+	
+		memset(foreOrBack,0,strlen(foreOrBack));//resets the string to null
+	
+		strcpy(foreOrBack,"highlight");//fills the c string with highlight
+	
+		colorSelectionPrompt(foreOrBack, &menuValue);//calls the prompt or menu selection for selecting colors
+	
+		indexHighlight = menuValue - 1;//highlightAsciiValue[indexHighlight] selects the requested color
+		
+		printf("\e[%dm", foregroundAsciiValue[indexForeground]);//acii escape sequence for foreground
+		printf("\e[%dm", highlightAsciiValue[indexHighlight]);//ascii escape sequence for background
+	
+		printf("Example Text!\n");//example color pallete the user selected
+	
+		defaultColor();
+		
+		while(1){
+			
+			
+			printf("\nWould you like to keep these settings\n1-Yes\n2-No\n");//prompts user
+			
+			scanf("%i",&menuValue);//reads menu selection
+			scanf("%c", &catchNewLineFromBuffer); // catches new line from scanf buffer
+			
+	
+			if(menuValue == 1){//infinitely loops if the user types an incorrect menu value
+				printf("\e[%dm", foregroundAsciiValue[indexForeground]);//sets the color the user selected for foreground
+				printf("\e[%dm", highlightAsciiValue[indexHighlight]);//sets the color the user selected for background or highlight
+				loopAgain = false;//the outer for loop no longer needs to run
+				break;	//breaks from infinite loop
+			}
+			else if(menuValue == 2){//if the user cant see or hates the colors selected this is the opportunity to change it
+				loopAgain = true;//outer while loop runs again
+				break;//breaks from infinite loop
+			}
+			else{
+				printf("Incorrect menu value try again.");
+			}
+			
+			//if the wrong value is typed inner while loop infinitely loops until the user selects an appropriate selection
+		}	
+    }//end of while(loopAgain){}
+  
+}//end of void customPrompt(){}
