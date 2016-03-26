@@ -53,13 +53,14 @@ int main(int argc, char* argv[]) {
 			fseek(batchFile, 0, SEEK_END);
 			long fileSize = ftell(batchFile);
 
-			// Exits with failure if batchFile could not be opened
 			if (batchFile == NULL) {
+				// Exits with failure if batchFile could not be opened
 				fprintf(stderr, "Error: Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
 			else if (fileSize == 0) {
 				fprintf(stderr, "Error: Batch file is empty\n");
+				// Exits with failure if batchFile is empty
 				return EXIT_FAILURE;
 			}
 			else if (fileSize > 516) {
@@ -141,6 +142,7 @@ bool runCommand(char* strInput, bool batchMode) {
 			printf("NEW PATH: %s\n", PATH);
 			break;
 		}
+			// Allows change of current directory
 		else if (batchMode == true) {
 			// Prints current commands if batchMode is true
 			printf("[ %s ] ", command);
@@ -148,11 +150,11 @@ bool runCommand(char* strInput, bool batchMode) {
 		}
 
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
+			// Exits parent shell
 			exitStatus = false;
 			break;
 		}
 		else if(strstr(command, "cd") != NULL) { 
-			// Searches for 'cd' on the commands
 			chdir(command+3);
 			break;
 		}
