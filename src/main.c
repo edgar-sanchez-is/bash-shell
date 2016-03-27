@@ -24,6 +24,7 @@
 #define MAX_LENGTH 512
 
 // Global variables
+char prompt[12] = "prompt>";								// Default prompt
 char* PATH = "/bin/bash";									// Default PATH directory
 char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; 			// Max number of commands the user can enter
 int historyIterator = 0;									// Number of commands the user has entered
@@ -103,11 +104,11 @@ int main(int argc, char* argv[]) {
 			static int counter = 1;
 			
 			if(counter++ > 1)
-				printf("prompt> ");
+				printf("%s ", prompt);
 			else{
 				printf("\e[91mTo customize prompt enter the 'customize' command\n");
 				defaultColor();
-				printf("prompt> ");
+				printf("%s ", prompt);
 			}
 
 			// Reads user input and handles Ctrl-D
@@ -176,6 +177,21 @@ bool runCommand(char* strInput, bool batchMode) {
 			exitStatus = false;
 			break;
 		}
+		else if (strcmp(command, "prompt") == 0 && batchMode == false) {
+			// Sets custom prompt for current shell session
+			do {
+				printf("Enter custom prompt [10 chars max]: ");
+				fgets(prompt, 12, stdin);
+				if (prompt[strlen(prompt) - 1] != '\n') {
+					fprintf(stderr, "Error: Max characters exceeded\n");
+					int ch;
+					while ((ch = getc(stdin)) != '\n' && ch != EOF);
+				}
+			} while (prompt[strlen(prompt) - 1] != '\n');
+			prompt[strcspn (prompt, "\n")] = '\0';	// Removes trailing '\n' from string
+			printf("Prompt updated to: %s\n", prompt);
+			break;
+		}
 		else if(strstr(command, "customize") != NULL) {
 			customPrompt(); // Enters the prompt customization interface
 			break;
@@ -216,7 +232,7 @@ bool runCommand(char* strInput, bool batchMode) {
 	}
 
 	// Waits for each child to terminate
-	for(int i=0; i < totalChildren; ++i) {
+	for(int i = 0; i < totalChildren; ++i) {
 		wait(NULL); 						// Proceeds if a single child is terminated
 	}
 
