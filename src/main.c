@@ -232,7 +232,7 @@ bool runCommand(char* strInput, bool batchMode) {
 	}
 
 	// Waits for each child to terminate
-	for(int i=0; i < totalChildren; ++i) {
+	for(int i = 0; i < totalChildren; ++i) {
 		wait(NULL); 						// Proceeds if a single child is terminated
 	}
 
