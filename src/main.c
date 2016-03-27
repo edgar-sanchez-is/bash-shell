@@ -24,7 +24,7 @@
 #define MAX_LENGTH 512
 
 // Global variables
-char prompt[11] = "prompt>";								// Default prompt
+char prompt[12] = "prompt>";								// Default prompt
 char* PATH = "/bin/bash";									// Default PATH directory
 char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; 			// Max number of commands the user can enter
 int historyIterator = 0;									// Number of commands the user has entered
@@ -179,9 +179,16 @@ bool runCommand(char* strInput, bool batchMode) {
 		}
 		else if (strcmp(command, "prompt") == 0 && batchMode == false) {
 			// Sets custom prompt for current shell session
-			printf("Enter custom prompt [10 chars max]: ");
-			fgets(prompt, 11, stdin);
-			prompt[strcspn ( prompt, "\n" )] = '\0';	// Removes trailing '\n' from string
+			do {
+				printf("Enter custom prompt [10 chars max]: ");
+				fgets(prompt, 12, stdin);
+				if (prompt[strlen(prompt) - 1] != '\n') {
+					fprintf(stderr, "Error: Max characters exceeded\n");
+					int ch;
+					while ((ch = getc(stdin)) != '\n' && ch != EOF);
+				}
+			} while (prompt[strlen(prompt) - 1] != '\n');
+			prompt[strcspn (prompt, "\n")] = '\0';	// Removes trailing '\n' from string
 			printf("Prompt updated to: %s\n", prompt);
 			break;
 		}
