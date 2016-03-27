@@ -163,7 +163,9 @@ bool runCommand(char* strInput, bool batchMode) {
 		}
 		else if (strncmp(command, "cd ", 3) == 0 && batchMode == false) {
 			// Allows change of current directory
-			chdir(command + 3);
+			if (chdir(command + 3) != 0) {
+				fprintf(stderr, "Error: cd: Invalid directory\n");
+			}
 			break;
 		}
 		else if (batchMode == true) {
