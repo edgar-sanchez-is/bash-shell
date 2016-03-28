@@ -27,15 +27,21 @@
 char prompt[32] = "prompt>";								// Default prompt
 char* PATH = "/bin/bash";									// Default PATH directory
 char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; 			// Max number of commands the user can enter
+char oldComm[MAX_LENGTH][20] = {{0}};						// Number of old commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
+char newComm[MAX_LENGTH][20] = {{0}};						// Number of renamed commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
 int historyIterator = 0;									// Number of commands the user has entered
+int indexComm = 0;
 
 // Function prototypes
 bool runCommand(char*, bool);
 void trimSpaces(char*);
 void history(char*);
 void customPrompt();
+void colorPrompt();
 void colorSelectionPrompt(char[], int*);
 void defaultColor();
+void changeCommand();
+char* altNameComm(char*);
 
 int main(int argc, char* argv[]) {
 	bool shellStatus = true;								// Controls the Shell loop
@@ -149,6 +155,8 @@ bool runCommand(char* strInput, bool batchMode) {
 		
 		// Adds current command to history
 		history(command);
+		// Takes in changed command and returns original command while also adding it to history
+		command = altNameComm(command);
 
 		if (strcmp(command, "") == 0) {
 			// Strips empty commands
@@ -300,24 +308,7 @@ void defaultColor(){
 	printf("\e[%dm", 49); 								// Default background color
 }
 
-void customPrompt(){
-	printf("Would you like to customize the prompt's colors (0) or change a commands name (1)?\n customize>");
-	char userResponse; 									// Stores user response
-	scanf("%c", &userResponse);
-
-	// If response = 0 stay in color customization
-	if(userResponse == '0'){
-		printf("Entering prompt customization interface...\n");
-		sleep(2);
-	}
-	else if(userResponse == '1'){
-		// If response = 1 go to changeCommand()
-		// changeCommand();
-	}
-	else {
-		printf("Invalid command, returning to prompt...\n");	// If invalid command return to prompt
-	}
-
+void colorPrompt(){
 	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};	// Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
 	int highlightAsciiValue[8] = {40,41,42,43,44,45,46,47};		// Same colors as above
 	int indexForeground;										// The default color for foreground is white
@@ -377,4 +368,82 @@ void customPrompt(){
 			}
 		}
     }
+}
+
+void customPrompt(){
+	printf("Would you like to customize the prompt's colors (0) or change a commands name (1)?\ncustomize> ");
+	char userResponse[2]; 										// Stores user response
+	scanf ("%[^\n]%*c", userResponse);
+
+	// If response = 0 stay in color customization
+	if(*userResponse == '0'){
+		printf("Entering prompt customization interface...\n");
+		sleep(2);
+		colorPrompt();											// Enters color customization prompt
+	}
+	// If response = 1 go to changeCommand()
+	else if(*userResponse == '1'){
+		printf("Entering command change interface...\n");
+		sleep(2);
+		changeCommand();										// Enters command change prompt
+	}
+	else {
+		printf("Invalid command, returning to prompt...\n");	// If invalid command return to prompt
+	}
+}
+void changeCommand(){
+	bool status = true;
+	while(status){
+		indexComm++;
+		char chngInput[100];
+		
+		printf("\e[1;1H\e[2J"); // Clear screen
+		printf("\e[91mEnter a command, without flags, that you would like to change followed by its new name.\n");
+		printf("Ex. 'ls [newName]'\n");
+		defaultColor();
+		printf("customize> ");
+		
+		if(fgets(chngInput,sizeof(chngInput),stdin) != NULL){							// Read input from user
+			int wordCount = 0;
+			for (char *p = strtok(chngInput," "); p != NULL; p = strtok(NULL, " ")){	// Store commands in array
+				if(++wordCount == 1) 
+					strcpy(oldComm[indexComm], p);										// Old Command 
+				else if(wordCount == 2)
+					strncpy(newComm[indexComm], p, strlen(p)-1);						// New command
+				else{
+					printf("Too many commands, command not added..\n");
+					break;																// Too many words
+				}
+			}
+		}
+		fflush(stdout);
+		
+		// Stores User Response 
+		char userResponse[2];
+		printf("Would you like to change another command (1) or exit (0)?\ncustomize> ");
+		scanf ("%[^\n]%*c", userResponse);
+
+		// If response = 0 return to prompt interface
+		if(*userResponse == '0') status = false;
+		// If response = 1 change another command
+		else if(*userResponse == '1') status = true;
+		else {			
+			printf("Invalid response, exiting customization interface...\n");
+			status = false;
+			sleep(2);
+		}		
+	}
+	printf("Returning to prompt...\n");
+	sleep(2);	
+	printf("\e[1;1H\e[2J"); // Clear screen
+}
+char* altNameComm(char* command){
+	int i;
+	// Checks if the command entered has a different name, if so it switches it with its original name
+	for(i = 1; i <= indexComm; i++){
+		//printf("%d: NewComm: %s - OldComm: %s - command: %s\n", indexComm, newComm[i], oldComm[i], command);
+		if (strcmp(newComm[i], command) == 0)
+			return oldComm[i];
+	}
+	return command;
 }
