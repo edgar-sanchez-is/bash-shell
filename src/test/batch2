@@ -1,6 +1,6 @@
-; cat file1 ; grep Dallas file2
-cat file1 ; ; grep Dallas file2
-cat file1 ; ls -l ;
-cat file1 ;;;; ls -l
+; cat test/file1 ; grep Dallas test/file2
+cat test/file1 ; ; grep Dallas test/file2
+cat test/file1 ; ls -l ;
+cat test/file1 ;;;; ls -l
 ;; ls -l
 ;
