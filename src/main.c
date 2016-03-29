@@ -451,7 +451,6 @@ char* altNameComm(char* command){
 	int i;
 	// Checks if the command entered has a different name, if so it switches it with its original name
 	for(i = 1; i <= indexComm; i++){
-		// printf("%d: NewComm: %s - OldComm: %s - command: %s\n", indexComm, newComm[i], oldComm[i], command);
 		if (strcmp(newComm[i], command) == 0)
 			return oldComm[i];
 	}
