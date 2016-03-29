@@ -69,6 +69,10 @@ Commands are run simultaneously, which means that some of the output may be inte
 
 To exit the shell, simply type `quit`. This will cause the shell to stop processing any more commands and will exit.
 
+To remove executable and object files, execute:
+
+    $ make clean
+
 ##### Directory Structure
 
 Directory   |   Description
