@@ -24,12 +24,12 @@
 #define MAX_LENGTH 512
 
 // Global variables
-char prompt[32] = "prompt>";								// Default prompt
-char PATH[32] = "/bin/bash";								// Default PATH directory
-char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; 			// Max number of commands the user can enter
-char oldComm[MAX_LENGTH][20] = {{0}};						// Number of old commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
-char newComm[MAX_LENGTH][20] = {{0}};						// Number of renamed commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
-int historyIterator = 0;									// Number of commands the user has entered
+char prompt[32] = "prompt>";                                // Default prompt
+char PATH[32] = "/bin/bash";                                // Default PATH directory
+char historyList[MAX_LENGTH][MAX_LENGTH];                   // Max number of commands the user can enter
+char oldComm[MAX_LENGTH][20] = {{0}};                       // Number of old commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
+char newComm[MAX_LENGTH][20] = {{0}};                       // Number of renamed commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
+int historyIterator = 1;                                    // Number of commands the user has entered
 int indexComm = 0;
 
 // Function prototypes
@@ -44,7 +44,7 @@ void changeCommand();
 char* altNameComm(char*);
 
 int main(int argc, char* argv[]) {
-	bool shellStatus = true;								// Controls the Shell loop
+	bool shellStatus = true;                                // Controls the Shell loop
 
 	do {
 		// ===============
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 			// ====================
 			// Processes user input
 			// ====================
-			char userInput[MAX_LENGTH + 2]; 			// Stores string input by user
+			char userInput[MAX_LENGTH + 2];                 // Stores string input by user
 
 			// Displays prompt within interactive shell
 			static int counter = 1;
@@ -141,9 +141,6 @@ int main(int argc, char* argv[]) {
 		}
 	} while(shellStatus);
 
-	// Sets to default color when quit or exit is called in bash file
-	defaultColor();
-
 	return EXIT_SUCCESS;
 }
 
@@ -161,6 +158,7 @@ bool runCommand(char* strInput, bool batchMode) {
 		
 		// Adds current command to history
 		history(command);
+
 		// Takes in changed command and returns original command while also adding it to history
 		command = altNameComm(command);
 
@@ -204,7 +202,7 @@ bool runCommand(char* strInput, bool batchMode) {
 					while ((ch = getc(stdin)) != '\n' && ch != EOF);
 				}
 			} while (PATH[strlen(PATH) - 1] != '\n');
-			PATH[strcspn (PATH, "\n")] = '\0';	// Removes trailing '\n' from string
+			PATH[strcspn (PATH, "\n")] = '\0';              // Removes trailing '\n' from string
 			printf("PATH successfully updated\n");
 			break;
 		}
@@ -219,7 +217,7 @@ bool runCommand(char* strInput, bool batchMode) {
 					while ((ch = getc(stdin)) != '\n' && ch != EOF);
 				}
 			} while (prompt[strlen(prompt) - 1] != '\n');
-			prompt[strcspn (prompt, "\n")] = '\0';	// Removes trailing '\n' from string
+			prompt[strcspn (prompt, "\n")] = '\0';          // Removes trailing '\n' from string
 			printf("Prompt successfully updated\n");
 			break;
 		}
@@ -227,7 +225,7 @@ bool runCommand(char* strInput, bool batchMode) {
 			customPrompt(); // Enters the prompt customization interface
 			break;
 		}
-		else if ((pid = fork()) == 0) {		// Creates child by calling fork()
+		else if ((pid = fork()) == 0) {                     // Creates child by calling fork()
 			// ================
 			// Child Process
 			// ================
@@ -235,7 +233,7 @@ bool runCommand(char* strInput, bool batchMode) {
 			// Executes command and terminates child if successful or command not found
 			execl(PATH, "Shell", "-c", command, NULL);
 			fprintf(stderr, "Error: %s: Failed to execute\n", command);
-			_exit(EXIT_FAILURE); 			// Executes and terminates child if execl() fails
+			_exit(EXIT_FAILURE);                            // Executes and terminates child if execl() fails
 		}
 		else if (pid < 0) {
 			// ================
@@ -243,25 +241,25 @@ bool runCommand(char* strInput, bool batchMode) {
 			// ================
 
 			fprintf(stderr, "Error: Failed to fork child process\n");
-			_exit(EXIT_FAILURE); 			// Terminates child
+			_exit(EXIT_FAILURE);                            // Terminates child
 		}
-		else {								// Can only be run by parent because pid > 0
+		else {                                              // Can only be run by parent because pid > 0
 			// ================
 			// Parent Process
 			// ================
 			
 			// Continues searching for commands starting from last ";"
 			command = strtok(NULL, ";");		
-			totalChildren++;				// Increases total number of child processes
+			totalChildren++;                                // Increases total number of child processes
 		}
 	}
 
 	// Waits for each child to terminate
 	for(int i = 0; i < totalChildren; ++i) {
-		wait(NULL); 						// Proceeds if a single child is terminated
+		wait(NULL);                                         // Proceeds if a single child is terminated
 	}
 
-	return exitStatus;						// Returns false if shell should exit successfully
+	return exitStatus;                                      // Returns false if shell should exit successfully
 }
 
 // Trims leading and trailing spaces from a given string
@@ -287,7 +285,7 @@ void trimSpaces(char* parsedInput) {
 void history(char* command) {
 	// Copies command into the array of strings
 	strcpy(historyList[historyIterator], command);
-	historyIterator++;						// Increases total number of commands in history
+	historyIterator++;
 
 	// User has typed in history so we print the history list
 	if(strcmp(command, "history") == 0) {
@@ -299,17 +297,17 @@ void history(char* command) {
 
 // Pass the string "foreGround" or "Background"
 void colorSelectionPrompt(char foregroundOrHighlight[],int *menuValue) {
-	char catchNewLineFromBuffer;						// Catches new line from the scanf() buffer
+	char catchNewLineFromBuffer;                            // Catches new line from the scanf() buffer
 
 	while(1){
 		*menuValue = 0;
 		printf("Enter the corresponding number that you want the %s to be for the font.\n", foregroundOrHighlight);
 		printf("1-Black\n2-Red\n3-Green\n4-Yellow\n5-Blue\n6-Magenta\n7-Cyan\n8-White\n");
 
-		scanf("%i", menuValue);							// Catches the first character as an integer
-		scanf("%c", &catchNewLineFromBuffer);			// Catches the \n characters so it no longer exists in the buffer
+		scanf("%i", menuValue);                             // Catches the first character as an integer
+		scanf("%c", &catchNewLineFromBuffer);               // Catches the \n characters so it no longer exists in the buffer
 
-		if(*menuValue > 0 && *menuValue < 9){			// If the value is correct break from the infinite loop
+		if(*menuValue > 0 && *menuValue < 9) {              // If the value is correct break from the infinite loop
 			break;
 		}
 		else{
@@ -319,29 +317,29 @@ void colorSelectionPrompt(char foregroundOrHighlight[],int *menuValue) {
 }
 
 void defaultColor(){
-	printf("\e[%dm", 39); 								// Default foreground color
-	printf("\e[%dm", 49); 								// Default background color
+	printf("\e[%dm", 39);                                                           // Default foreground color
+	printf("\e[%dm", 49);                                                           // Default background color
 }
 
 void colorPrompt(){
-	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};	// Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
-	int highlightAsciiValue[8] = {40,41,42,43,44,45,46,47};		// Same colors as above
-	int indexForeground;										// The default color for foreground is white
-	int indexHighlight;											// Default background or highlight of black
-	char catchNewLineFromBuffer;								// Catches new line from the scanf buffer
+	int foregroundAsciiValue[8] = {30,31,32,33,34,35,36,37};                        // Black,Red,Green,Yellow,Blue,Magenta,Cyan,White
+	int highlightAsciiValue[8]  = {40,41,42,43,44,45,46,47};                        // Same colors as above
+	int indexForeground;                                                            // The default color for foreground is white
+	int indexHighlight;                                                             // Default background or highlight of black
+	char catchNewLineFromBuffer;                                                    // Catches new line from the scanf buffer
 	 
 	int menuValue;
 	bool loopAgain = true;
 	
 	while(loopAgain){
-		char foreOrBack[11] = "foreground";						// Value for foreground or background
+		char foreOrBack[11] = "foreground";                                         // Value for foreground or background
 		// indexForeground = 7;
 		// indexHighlight = 0;
 
 		// Calls the prompt or menu selection for selecting colors
 		colorSelectionPrompt(foreOrBack,&menuValue);
 	
-		indexForeground = menuValue - 1;						// ForegroundAsciiValue[indexForeground] selects the requested color
+		indexForeground = menuValue - 1;                                            // ForegroundAsciiValue[indexForeground] selects the requested color
 
 		// Resets the string to null
 		memset(foreOrBack,0,strlen(foreOrBack));
@@ -352,31 +350,31 @@ void colorPrompt(){
 		// Calls the prompt or menu selection for selecting colors
 		colorSelectionPrompt(foreOrBack, &menuValue);
 	
-		indexHighlight = menuValue - 1;							// HighlightAsciiValue[indexHighlight] selects the requested color
+		indexHighlight = menuValue - 1;                                             // HighlightAsciiValue[indexHighlight] selects the requested color
 		
-		printf("\e[%dm", foregroundAsciiValue[indexForeground]);// ASCII escape sequence for foreground
-		printf("\e[%dm", highlightAsciiValue[indexHighlight]);	// ASCII escape sequence for background
+		printf("\e[%dm", foregroundAsciiValue[indexForeground]);                    // ASCII escape sequence for foreground
+		printf("\e[%dm", highlightAsciiValue[indexHighlight]);                      // ASCII escape sequence for background
 	
-		printf("Example Text!\n"); // Example color pallete the user selected
+		printf("Example Text!\n");                                                  // Example color pallete the user selected
 	
 		defaultColor();
 		
 		while(1){
-			printf("\nWould you like to keep these settings\n1-Yes\n2-No\n");	// Prompts user
-			scanf("%i",&menuValue);												// Reads menu selection
-			scanf("%c", &catchNewLineFromBuffer); 								// Catches new line from scanf() buffer
+			printf("\nWould you like to keep these settings\n1-Yes\n2-No\n");       // Prompts user
+			scanf("%i",&menuValue);                                                 // Reads menu selection
+			scanf("%c", &catchNewLineFromBuffer);                                   // Catches new line from scanf() buffer
 
 			if(menuValue == 1){
 				// Infinite loops if the user types an incorrect menu value
-				printf("\e[%dm", foregroundAsciiValue[indexForeground]);	// Sets the color the user selected for foreground
-				printf("\e[%dm", highlightAsciiValue[indexHighlight]);		// Sets the color the user selected for background or highlight
-				loopAgain = false;											// The outer for loop no longer needs to run
-				break;														// Breaks from infinite loop
+				printf("\e[%dm", foregroundAsciiValue[indexForeground]);            // Sets the color the user selected for foreground
+				printf("\e[%dm", highlightAsciiValue[indexHighlight]);              // Sets the color the user selected for background or highlight
+				loopAgain = false;                                                  // The outer for loop no longer needs to run
+				break;                                                              // Breaks from infinite loop
 			}
 			else if(menuValue == 2){
 				// If the user cant see or hates the colors selected this is the opportunity to change it
-				loopAgain = true;								// Puter while loop runs again
-				break;											// Breaks from infinite loop
+				loopAgain = true;                                                   // Puter while loop runs again
+				break;                                                              // Breaks from infinite loop
 			}
 			else{
 				printf("Incorrect menu value try again.");
@@ -387,23 +385,23 @@ void colorPrompt(){
 
 void customPrompt(){
 	printf("Would you like to customize the prompt's colors (0) or change a commands name (1)?\ncustomize> ");
-	char userResponse[2]; 										// Stores user response
+	char userResponse[2];                                                           // Stores user response
 	scanf ("%[^\n]%*c", userResponse);
 
 	// If response = 0 stay in color customization
 	if(*userResponse == '0'){
 		printf("Entering prompt customization interface...\n");
 		sleep(2);
-		colorPrompt();											// Enters color customization prompt
+		colorPrompt();                                                              // Enters color customization prompt
 	}
 	// If response = 1 go to changeCommand()
 	else if(*userResponse == '1'){
 		printf("Entering command change interface...\n");
 		sleep(2);
-		changeCommand();										// Enters command change prompt
+		changeCommand();                                                            // Enters command change prompt
 	}
 	else {
-		printf("Invalid command, returning to prompt...\n");	// If invalid command return to prompt
+		printf("Invalid command, returning to prompt...\n");                        // If invalid command return to prompt
 	}
 }
 void changeCommand(){
@@ -412,7 +410,7 @@ void changeCommand(){
 		indexComm++;
 		char chngInput[100];
 		
-		printf("\e[1;1H\e[2J"); // Clear screen
+		printf("\e[1;1H\e[2J");                                                     // Clear screen
 		printf("\e[91mEnter a command, without flags, that you would like to change followed by its new name.\n");
 		printf("Ex. 'ls [newName]'\n");
 		defaultColor();
