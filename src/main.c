@@ -54,47 +54,48 @@ int main(int argc, char* argv[]) {
 			// ====================
 			// Processes batch file
 			// ====================
-			char* batchDir = argv[1];						// Stores shell argument (file directory)
-			FILE* batchFile = fopen(batchDir, "r");			// Opens batchDir for reading and stores stream in batchFile
-			char batchInput[MAX_LENGTH];					// Stores string within batch file
 
-			// Seeks to end of batchFile and stores file size
-			fseek(batchFile, 0, SEEK_END);
-			long fileSize = ftell(batchFile);
-
+			// Opens file for reading and stores stream in batchFile
+			FILE* batchFile = fopen(argv[1], "r");
 			if (batchFile == NULL) {
-				// Exits with failure if batchFile could not be opened
 				fprintf(stderr, "Error: Batch file does not exist or cannot be opened.\n");
 				return EXIT_FAILURE;
 			}
-			else if (fileSize == 0) {
-				// Exits with failure if batchFile is empty
+
+			// Checks if batchFile is empty
+			fseek(batchFile, 0, SEEK_END);
+			if (ftell(batchFile) == 0) {
 				fprintf(stderr, "Error: Batch file is empty.\n");
 				return EXIT_FAILURE;
 			}
-			else if (fileSize > 516) {
-				// Exits with failure if batchFile is larger than 512 chars (516 including \n\0)
-				fprintf(stderr, "Error: Batch file must be 512 characters or less. %lu\n", fileSize);
-				return EXIT_FAILURE;
-			}
-
-			// Sets file pointer back to beginning of file
 			fseek(batchFile, 0, SEEK_SET);
 
-			// Reads batchFile stream and stores it in batchInput
-			fgets(batchInput, MAX_LENGTH, batchFile);
-
-			// Prints first part of batch commands
-			printf("Batch commands: ");
 			// Prints batch mode banner and active file
 			printf("-----[ BATCH MODE ]-----\n");
 			printf("--> File: %s\n", argv[1]);
 
-			// Parses/executes batchInput and stores returned bool value in shellStatus
-			shellStatus = runCommand(batchInput, true);
+			char buf[MAX_LENGTH + 1];
+			while (fgets(buf, MAX_LENGTH, batchFile)) {
+				if (buf[strlen(buf) - 1] != '\n') {
+					fprintf(stderr, "Error: Line must be less than 512 characters\n");
+					fflush(stdout);
+					int ch;
+					while ((ch = getc(batchFile))) {
+						if (ch == '\n') {
+							break;
+						}
+					}
+				}
+				else {
+					// Execute each line of commands read in from batchFile
+					printf("\nBatch line> %s", buf);
+					runCommand(buf, true);
+				}
+			}
 
 			// Closes batchFile
 			fclose(batchFile);
+			shellStatus = false;
 		}
 		else if (argc > 2) {
 			// ====================
