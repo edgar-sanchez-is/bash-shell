@@ -29,7 +29,7 @@ For example, if you run the program as:
 
     $ ./shell /home/mat0299/csce3600/batchFile
 
-then the shell will read commands from `/home/mat0299/csce3600/batchFile` until it sees the `quit` command, it reaches the end of file, or you tyep '`Ctrl-D`'/'`Ctrl-C`'.
+then the shell will read commands from `/home/mat0299/csce3600/batchFile` until it sees the `quit` command, it reaches the end of file, or you type '`Ctrl-D`'/'`Ctrl-C`'.
 
 Alternatively, if you run the program as:
 
