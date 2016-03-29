@@ -86,6 +86,9 @@ int main(int argc, char* argv[]) {
 
 			// Prints first part of batch commands
 			printf("Batch commands: ");
+			// Prints batch mode banner and active file
+			printf("-----[ BATCH MODE ]-----\n");
+			printf("--> File: %s\n", argv[1]);
 
 			// Parses/executes batchInput and stores returned bool value in shellStatus
 			shellStatus = runCommand(batchInput, true);
@@ -109,12 +112,14 @@ int main(int argc, char* argv[]) {
 			// Displays prompt within interactive shell
 			static int counter = 1;
 			
-			if(counter++ > 1)
-				printf("%s ", prompt);
-			else{
-				printf("\e[91mTo customize prompt enter the 'customize' command\n");
+			if(counter++ > 1) {
+				printf("\n%s ", prompt);
+			}
+			else {
+				printf("-----[ INTERACTIVE MODE ]-----\n");
+				printf("--> Type \"help\" to view commands\n");
 				defaultColor();
-				printf("%s ", prompt);
+				printf("\n%s ", prompt);
 			}
 
 			// Reads user input and handles Ctrl-D
@@ -170,15 +175,21 @@ bool runCommand(char* strInput, bool batchMode) {
 			}
 			break;
 		}
-		else if (batchMode == true) {
-			// Prints current commands if batchMode is true
-			printf("[ %s ] ", command);
-			fflush(stdout);					// Forces printing to screen
-		}
 
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			// Exits parent shell
 			exitStatus = false;
+			break;
+		}
+		else if ((strcmp(command, "help") == 0)) {
+			printf("/--------[ HELP: LIST OF INTERNAL COMMANDS ]-------\\\n"
+			       "| history       - prints list of commands entered  |\n"
+			       "| prompt        - sets custom prompt string        |\n"
+				   "| customize     - sets customized shell options    |\n"
+				   "| path          - sets PATH directory              |\n"
+				   "| cd            - change current directory         |\n"
+				   "| quit OR exit  - exits shell program              |\n"
+				   "\\--------------------------------------------------/\n");
 			break;
 		}
 		else if (strcmp(command, "path") == 0 && batchMode == false) {
@@ -242,12 +253,6 @@ bool runCommand(char* strInput, bool batchMode) {
 			command = strtok(NULL, ";");		
 			totalChildren++;				// Increases total number of child processes
 		}
-	}
-
-	// Prints newline after current batch commands and sets exitStatus to false if batchMode is true
-	if (batchMode == true) {
-		printf("\n");
-		exitStatus = false;
 	}
 
 	// Waits for each child to terminate
@@ -450,7 +455,7 @@ char* altNameComm(char* command){
 	int i;
 	// Checks if the command entered has a different name, if so it switches it with its original name
 	for(i = 1; i <= indexComm; i++){
-		//printf("%d: NewComm: %s - OldComm: %s - command: %s\n", indexComm, newComm[i], oldComm[i], command);
+		// printf("%d: NewComm: %s - OldComm: %s - command: %s\n", indexComm, newComm[i], oldComm[i], command);
 		if (strcmp(newComm[i], command) == 0)
 			return oldComm[i];
 	}
