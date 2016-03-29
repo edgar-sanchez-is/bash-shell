@@ -109,17 +109,16 @@ int main(int argc, char* argv[]) {
 			// Processes user input
 			// ====================
 			char userInput[MAX_LENGTH + 2];                 // Stores string input by user
+			static bool firstLaunch = true;                 // Displays welcome prompt on shell launch
 
-			// Displays prompt within interactive shell
-			static int counter = 1;
-			
-			if(counter++ > 1) {
-				printf("\n%s ", prompt);
-			}
-			else {
+			if (firstLaunch == true) {
 				printf("-----[ INTERACTIVE MODE ]-----\n");
 				printf("--> Type \"help\" to view commands\n");
 				defaultColor();
+				printf("\n%s ", prompt);
+				firstLaunch = false;
+			}
+			else {
 				printf("\n%s ", prompt);
 			}
 
@@ -157,7 +156,6 @@ bool runCommand(char* strInput, bool batchMode) {
 		trimSpaces(command);
 		
 		// Adds current command to history
-		history(command);
 
 		// Takes in changed command and returns original command while also adding it to history
 		command = altNameComm(command);
@@ -284,7 +282,7 @@ void trimSpaces(char* parsedInput) {
 // Adds commands to history or prints it out
 void history(char* command) {
 	// Copies command into the array of strings
-	strcpy(historyList[historyIterator], command);
+	strcpy(historyList[historyIterator], cmdString);
 	historyIterator++;
 
 	// User has typed in history so we print the history list
