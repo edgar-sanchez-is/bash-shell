@@ -25,7 +25,7 @@
 
 // Global variables
 char prompt[32] = "prompt>";								// Default prompt
-char* PATH = "/bin/bash";									// Default PATH directory
+char PATH[32] = "/bin/bash";								// Default PATH directory
 char historyList[MAX_LENGTH][MAX_LENGTH] = {{0}}; 			// Max number of commands the user can enter
 char oldComm[MAX_LENGTH][20] = {{0}};						// Number of old commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
 char newComm[MAX_LENGTH][20] = {{0}};						// Number of renamed commands [NUMBER_OF_WORDS][MAX_SIZE_OF_WORD]
@@ -163,12 +163,6 @@ bool runCommand(char* strInput, bool batchMode) {
 			command = strtok(NULL, ";");
 			continue;
 		}
-		else if (strncmp(command, "PATH=", 5) == 0 && batchMode == false) {
-			// Allows change of PATH variable
-			PATH = (command + 5);
-			printf("NEW PATH: %s\n", PATH);
-			break;
-		}
 		else if (strncmp(command, "cd ", 3) == 0 && batchMode == false) {
 			// Allows change of current directory
 			if (chdir(command + 3) != 0) {
@@ -185,6 +179,21 @@ bool runCommand(char* strInput, bool batchMode) {
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			// Exits parent shell
 			exitStatus = false;
+			break;
+		}
+		else if (strcmp(command, "path") == 0 && batchMode == false) {
+			// Sets custom prompt for current shell session
+			do {
+				printf("Enter custom path: ");
+				fgets(PATH, 32, stdin);
+				if (PATH[strlen(PATH) - 1] != '\n') {
+					fprintf(stderr, "Error: Maximum of 30 characters allowed\n");
+					int ch;
+					while ((ch = getc(stdin)) != '\n' && ch != EOF);
+				}
+			} while (PATH[strlen(PATH) - 1] != '\n');
+			PATH[strcspn (PATH, "\n")] = '\0';	// Removes trailing '\n' from string
+			printf("PATH successfully updated\n");
 			break;
 		}
 		else if (strcmp(command, "prompt") == 0 && batchMode == false) {
