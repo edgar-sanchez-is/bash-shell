@@ -1,23 +1,23 @@
 The Shell and System Calls
 ===============================
 
-Major Assignment 1
-
 ##### Created By
 
-Alex, Edgar, Luis, and Russell
+[Alex](https://github.com/orgs/unt-sysprog-team/people/Amac1990), [Edgar](https://github.com/orgs/unt-sysprog-team/people/edgr-sanchez), [Luis](https://github.com/orgs/unt-sysprog-team/people/LCDCLUITAR), and [Russell](https://github.com/orgs/unt-sysprog-team/people/russellprice)
 
 ##### Design Overview
 
-A shell implemenation that can be run in interactive or batch mode.
+A shell implementation that can be run in interactive or batch mode.
 
 ##### Complete Specification
 
-To compile the program, execute:
+To compile the program automatically, execute:
 
     $ make
 
-	C language used is C99
+To compile the program manually, execute:
+
+    $ gcc -std=c99 -Wall -o shell main.c
 
 To run the program, execute:
 
@@ -41,6 +41,18 @@ then the shell will display an interactive prompt:
 
 This interactive shell will accept commands and display output until you quit the program.
 
+To view a list of internal commands, type `help`:
+
+    $ prompt> help
+    /--------[ HELP: LIST OF INTERNAL COMMANDS ]-------\
+    | history       - prints list of commands entered  |
+    | prompt        - sets custom prompt string        |
+    | customize     - sets customized shell options    |
+    | path          - sets PATH directory              |
+    | cd            - change current directory         |
+    | quit OR exit  - exits shell program              |
+    \--------------------------------------------------/
+
 You may execute multiple commands in interactive mode or in batch files by separating them with a "`;`". Such as:
 
     prompt> ls -l; who; ps
@@ -51,7 +63,7 @@ which would output something similar to this:
 
 Commands are run simultaneously, which means that some of the output may be intermixed. This is by design.
 
-To exit the shell, simply provide a `quit` command. This will cause the shell to exit and will stop processing any more commands.
+To exit the shell, simply type `quit`. This will cause the shell to stop processing any more commands and will exit.
 
 ##### Directory Structure
 
@@ -66,5 +78,3 @@ README.md         |   Basic documentation and information.
 ##### Known Bugs or Problems
 
 [View current issues.](https://github.com/unt-sysprog-team/major-assignment-1/issues)
-
-#### Features not  implemenated 
