@@ -37,9 +37,13 @@ Alternatively, if you run the program as:
 
 then the shell will display an interactive prompt:
 
-    prompt>
+    $ ./shell
+    -----[ INTERACTIVE MODE ]-----
+    --> Type "help" to view commands
+    
+    prompt> 
 
-This interactive shell will accept commands and display output until you quit the program.
+This interactive shell will accept commands and display output until you `quit` the program.
 
 To view a list of internal commands, type `help`:
 
