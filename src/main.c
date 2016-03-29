@@ -144,18 +144,17 @@ int main(int argc, char* argv[]) {
 }
 
 // Parses/executes inputString as userInput if batchMode is false or as batchInput if batchMode is true
-bool runCommand(char* strInput, bool batchMode) {
-	int totalChildren = 0;								// Counter tlo keep track of total child processes
-	char* command = strtok(strInput, ";");				// Stores each command separated by ";"
-	pid_t pid;											// Initializes Process ID
-	bool exitStatus = true;								// Controls runCommand()'s return value
+bool runCommand(char strInput[], bool batchMode) {
+	history(strInput);                                      // Adds current command to history
+	int totalChildren = 0;                                  // Counter tlo keep track of total child processes
+	char* command = strtok(strInput, ";");                  // Stores each command separated by ";"
+	pid_t pid;                                              // Initializes Process ID
+	bool exitStatus = true;                                 // Controls runCommand()'s return value
 
 	// Processes each command until strtok() returns NULL
 	while (command) {
 		// Trims leading and trailing spaces around current command
 		trimSpaces(command);
-		
-		// Adds current command to history
 
 		// Takes in changed command and returns original command while also adding it to history
 		command = altNameComm(command);
@@ -280,15 +279,15 @@ void trimSpaces(char* parsedInput) {
 }
 
 // Adds commands to history or prints it out
-void history(char* command) {
+void history(char* cmdString) {
 	// Copies command into the array of strings
 	strcpy(historyList[historyIterator], cmdString);
 	historyIterator++;
 
 	// User has typed in history so we print the history list
-	if(strcmp(command, "history") == 0) {
-		for(int i = 0; i < historyIterator-1; i++) {
-			printf("Command[%i] = %s\n", i, historyList[i]);
+	if(strncmp(cmdString, "history", 7) == 0) {
+		for(int i = 1; i < (historyIterator - 1); i++) {
+			printf("   %i  %s", i, historyList[i]);
 		}	
 	}
 }
