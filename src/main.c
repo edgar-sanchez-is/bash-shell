@@ -175,7 +175,8 @@ bool runCommand(char strInput[], bool batchMode) {
 		if ( (strcmp(command, "quit") == 0) || (strcmp(command, "exit") == 0)) {
 			// Exits parent shell
 			exitStatus = false;
-			break;
+			command = strtok(NULL, ";");
+			continue;
 		}
 		else if ((strcmp(command, "help") == 0)) {
 			printf("/--------[ HELP: LIST OF INTERNAL COMMANDS ]-------\\\n"
