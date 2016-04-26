@@ -3,7 +3,7 @@ The Shell and System Calls
 
 ##### Created By
 
-[Alex](https://github.com/orgs/unt-sysprog-team/people/Amac1990), [Edgar](https://github.com/orgs/unt-sysprog-team/people/edgr-sanchez), [Luis](https://github.com/orgs/unt-sysprog-team/people/LCDCLUITAR), and [Russell](https://github.com/orgs/unt-sysprog-team/people/russellprice)
+[Alex McCulloch](https://github.com/orgs/unt-sysprog-team/people/Amac1990), [Edgar Sanchez](https://github.com/orgs/unt-sysprog-team/people/edgr-sanchez), [Luis Chaparro](https://github.com/orgs/unt-sysprog-team/people/LCDCLUITAR), and [Russell Price](https://github.com/orgs/unt-sysprog-team/people/russellprice)
 
 ##### Design Overview
 

@@ -1,5 +1,5 @@
-// =====================================================================
-// Name:		Alex, Edgar, Luis, Russell
+// ========================================================================
+// Name:		Alex McCulloch, Edgar Sanchez, Luis Chaparro, Russell Price
 // Course:		CSCE 3600
 // Date:		March 30, 2016
 // Title:		Major Assignment 1
@@ -10,7 +10,7 @@
 //			more input. Multiple commands can be separated by ';'
 // 			or by using a batch file.
 // Format:		shell [batchFile]
-// =====================================================================
+// ========================================================================
 
 #include <stdio.h>
 #include <stdlib.h>
