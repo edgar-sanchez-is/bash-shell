@@ -1,9 +1,6 @@
 The Shell and System Calls
 ===============================
 
-##### Created By
-
-[Alex McCulloch](https://github.com/orgs/unt-sysprog-team/people/Amac1990), [Edgar Sanchez](https://github.com/orgs/unt-sysprog-team/people/edgr-sanchez), [Luis Chaparro](https://github.com/orgs/unt-sysprog-team/people/LCDCLUITAR), and [Russell Price](https://github.com/orgs/unt-sysprog-team/people/russellprice)
 
 ##### Design Overview
 
@@ -86,3 +83,7 @@ README.md         |   Basic documentation and information.
 ##### Known Bugs or Problems
 
 [View current issues.](https://github.com/unt-sysprog-team/major-assignment-1/issues)
+
+##### Created By
+
+[Alex McCulloch](https://github.com/Amac1990), [Edgar Sanchez](https://github.com/edgr-sanchez), [Luis Chaparro](https://github.com/LCDCLUITAR), and [Russell Price](https://github.com/russellprice)
