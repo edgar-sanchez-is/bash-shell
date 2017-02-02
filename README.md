@@ -1,3 +1,5 @@
+![Logo](http://i.imgur.com/4A5rW2B.jpg)
+
 The Shell and System Calls
 ===============================
 
