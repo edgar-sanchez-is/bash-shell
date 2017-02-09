@@ -1,10 +1,11 @@
-The Shell and System Calls
+Bash Shell
 ===============================
+
 
 
 ##### Design Overview
 
-A shell implementation that can be run in interactive or batch mode.
+Bash shell implementation that allows interactive and batch file input from a user.
 
 ##### Complete Specification
 
